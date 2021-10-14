@@ -1,10 +1,12 @@
 def call(Map params = [:]) {
+  // Start Default Arguments
   def args = [
-          NEXUS_IP               : '172.31.4.27',
+          NEXUS_IP               : '172.31.14.124',
   ]
   args << params
 
-   pipeline {
+  // End Default + Required Arguments
+  pipeline {
     agent {
       label "${args.SLAVE_LABEL}"
     }
@@ -22,35 +24,35 @@ def call(Map params = [:]) {
     }
 
     stages {
-    
-     stage('Build Code & Install Dependencies') {
+
+      stage('Build Code & Install Dependencies') {
         steps {
           sh 'env'
           script {
             build = new nexus()
-            build.code_build("${APP_TYPE}","${COMPONENT}")
+            build.code_build("${APP_TYPE}", "${COMPONENT}")
           }
         }
-     }
-
-     stage('Prepare Artifacts') {
-       steps {
-         script {
-           prepare = new nexus
-           prepare.make_artifacts("${APP_TYPE}","${COMPONENT}")
-         }
-       }
-     }
+      }
 
 
-     stage('Upload Artifacts') {
-       steps {
-         script {
-           prepare = new nexus
-           prepare.nexus(COMPONENT)
-         }
-       } 
-     }
+      stage('Prepare Artifacts') {
+        steps {
+          script {
+            prepare = new nexus()
+            prepare.make_artifacts("${APP_TYPE}", "${COMPONENT}")
+          }
+        }
+      }
+
+      stage('Upload Artifacts') {
+        steps {
+          script {
+            prepare = new nexus()
+            prepare.nexus(COMPONENT)
+          }
+        }
+      }
     }
  
  }
